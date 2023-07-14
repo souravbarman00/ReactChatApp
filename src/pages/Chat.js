@@ -1,6 +1,6 @@
-import { useEffect, useState,useRef } from 'react';
-import { useParams } from 'react-router-dom';
-import { Box,Text,Container, Heading, HStack,VStack, FormControl, Input, Button, Stack, Avatar } from '@chakra-ui/react';
+import { useEffect, useState, useRef } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { Box, Text, Container, Heading, HStack, VStack, FormControl, Input, Button, Stack, Avatar } from '@chakra-ui/react';
 import { collection, query, orderBy, onSnapshot, addDoc, serverTimestamp, doc, getDoc } from 'firebase/firestore';
 import { auth, db } from '../firebase/firebase';
 import { format, formatRelative } from 'date-fns';
@@ -11,6 +11,7 @@ const Chat = () => {
   const [messageInput, setMessageInput] = useState('');
   const [otherUser, setOtherUser] = useState(null);
   const divForScroll = useRef(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const chatRef = collection(db, 'chats');
@@ -50,7 +51,11 @@ const Chat = () => {
 
   const isSelfChat = userId === currentUserId;
 
-  
+  useEffect(() => {
+    if (!auth.currentUser) {
+      navigate('/signup');
+    }
+  }, [navigate]);
 
   const getMessageContainerStyles = (isCurrentUser) => ({
     alignSelf: isCurrentUser ? 'flex-end' : 'flex-start',
@@ -76,48 +81,51 @@ const Chat = () => {
         const chatRef = collection(db, 'chats');
         await addDoc(chatRef, newMessage);
         setMessageInput('');
-        divForScroll.current.scrollIntoView({ behavior: "smooth" });
+        divForScroll.current.scrollIntoView({ behavior: 'smooth' });
       } catch (error) {
         console.error('Error sending message:', error);
       }
     }
   };
 
+  const handleLogout = async () => {
+    try {
+      await auth.signOut();
+      navigate('/signup');
+    } catch (error) {
+      console.error('Error logging out:', error);
+    }
+  };
+
   return (
-    <Container h={"100vh"} bg={"white"}>
+    <Container h={'100vh'} bg={'white'}>
       <Box display="flex" alignItems="center" mb={4}>
-        {otherUser && (
-          <Avatar size="md" src={otherUser.picture} alt={otherUser.name} mr={4} />
-        )}
+        {otherUser && <Avatar size="md" src={otherUser.picture} alt={otherUser.name} mr={4} />}
         <Heading size="md">{otherUser ? otherUser.name : 'Loading...'}</Heading>
+        <Button type='submit' colorScheme="blue" padding={5} margin={5} onClick={handleLogout}>
+          Logout
+        </Button>
       </Box>
-      
-      <VStack >
-        {messages.map((message, index) => (
-          (message.userId === currentUserId && message.otherUserId === userId) || 
+
+      <VStack>
+        {messages.map((message, index) =>
+          (message.userId === currentUserId && message.otherUserId === userId) ||
           (message.userId === userId && message.otherUserId === currentUserId) ? (
-            <Box 
+            <Box
               key={index}
-              {...getMessageContainerStyles(message.userId === currentUserId &&  message.otherUserId === userId)}
+              {...getMessageContainerStyles(message.userId === currentUserId)}
             >
-              
-              <Box display="flex" justifyContent="space-between" css={{
-                "&::-webkit-scrollbar": {
-                  display: "none",
-                },
-              }}>
-                <Text size="md"  mr={6}>{message.content}
-                
+              <Box display="flex" justifyContent="space-between">
+                <Text size="md" mr={6}>
+                  {message.content}
                 </Text>
-                
-                
                 <Box color="gray.500" fontSize="xs">
                   {}
                 </Box>
               </Box>
             </Box>
-          ):null
-        ))}
+          ) : null
+        )}
         <div ref={divForScroll}></div>
       </VStack>
 
@@ -137,7 +145,9 @@ const Chat = () => {
             </Button>
           </HStack>
         </form>
-      ):"Not allowed to chat with yourself "}
+      ) : (
+        'Not allowed to chat with yourself'
+      )}
     </Container>
   );
 };

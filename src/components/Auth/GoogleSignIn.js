@@ -1,5 +1,5 @@
 // src/components/Auth/GoogleSignIn.js
-import { Button } from '@chakra-ui/react';
+import { Button,VStack } from '@chakra-ui/react';
 import { signInWithPopup } from 'firebase/auth';
 import { auth, provider, db } from '../../firebase/firebase';
 import { useNavigate } from 'react-router-dom';
@@ -34,9 +34,12 @@ const GoogleSignIn = () => {
   };
 
   return (
-    <Button colorScheme="blue" onClick={handleSignIn}>
+    <VStack bg="white" justifyContent={"center"} h="100vh">
+      <Button colorScheme="blue" onClick={handleSignIn}>
       Sign in with Google
     </Button>
+    </VStack>
+    
   );
 };
 

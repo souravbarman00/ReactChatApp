@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Box, Avatar, Text, VStack } from '@chakra-ui/react';
+import { Box, Avatar, Text, VStack,Container } from '@chakra-ui/react';
 import { collection, query, getDocs, where, orderBy, limit } from 'firebase/firestore';
 import { db } from '../firebase/firebase';
 import { useNavigate } from 'react-router-dom';
@@ -31,6 +31,7 @@ const UserCard = ({ user }) => {
   return (
     <Box
       p={2}
+      bg={"red.50"}
       display="flex"
       alignItems="center"
       borderBottom="1px"
@@ -38,13 +39,16 @@ const UserCard = ({ user }) => {
       cursor="pointer"
       onClick={handleCardClick}
     >
+
+      
       <Avatar size="md" src={user.picture} alt={user.name} mr={4} />
-      <VStack align="flex-start">
+      <VStack h="full" paddingY={"4"} align="flex-start">
         <Text>{user.name}</Text>
         <Text color="gray.500" fontSize="sm">
           {latestMessage}
         </Text>
       </VStack>
+
     </Box>
   );
 };
