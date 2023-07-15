@@ -13,6 +13,24 @@ const Chat = () => {
   const divForScroll = useRef(null);
   const navigate = useNavigate();
 
+  // useEffect(() => {
+  //   const chatRef = collection(db, 'chats');
+  //   const chatQuery = query(chatRef, orderBy('timestamp'));
+
+  //   const unsubscribe = onSnapshot(chatQuery, (snapshot) => {
+  //     const messageList = [];
+  //     snapshot.forEach((doc) => {
+  //       const message = doc.data();
+  //       messageList.push(message);
+  //     });
+  //     setMessages(messageList);
+  //   });
+
+  //   return () => {
+  //     unsubscribe();
+  //   };
+  // }, []);
+
   useEffect(() => {
     const chatRef = collection(db, 'chats');
     const chatQuery = query(chatRef, orderBy('timestamp'));

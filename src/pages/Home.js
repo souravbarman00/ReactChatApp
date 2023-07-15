@@ -1,9 +1,9 @@
-// src/pages/Home.js
 import { useEffect, useState } from 'react';
-import { Box, Heading, VStack } from '@chakra-ui/react';
+import { Box, Heading, VStack,Container } from '@chakra-ui/react';
 import { onSnapshot, query, collection } from 'firebase/firestore';
 import { db } from '../firebase/firebase';
 import UserCard from '../components/UserCard';
+import UserProfile from '../components/UserProfile';
 
 const Home = () => {
   const [users, setUsers] = useState([]);
@@ -26,12 +26,19 @@ const Home = () => {
 
   return (
     <Box>
-      <Heading mb={4}>Registered Users</Heading>
-      <VStack spacing={4} align="stretch">
-        {users.map((user) => (
-          <UserCard key={user.id} user={user} />
-        ))}
-      </VStack>
+      <Container maxW="container.lg">
+        <VStack spacing={6} align="stretch">
+          <Heading as="h1" size="lg" textAlign="center">
+            Registered Users
+          </Heading>
+          <Box ml="auto">
+            <UserProfile />
+          </Box>
+          {users.map((user) => (
+            <UserCard key={user.id} user={user} />
+          ))}
+        </VStack>
+      </Container>
     </Box>
   );
 };
